@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_socketio import SocketIO, emit
 
 import os, sqlite3, hashlib, random
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+socketio = SocketIO(app)
 
 def get_db_connection():
     conn = sqlite3.connect("users.db")
@@ -77,13 +80,11 @@ def logout():
     flash("Logged out successfully!", "success")
     return redirect(url_for("index"))
 
-@app.route("/call", methods=["POST"])
-def handle_call():
-    pass
-
 if __name__ == "__main__":
-    app.run(
+    socketio.run(
+        app=app,
         host="0.0.0.0",
         port=80,
-        debug=True
+        debug=True,
+        allow_unsafe_werkzeug=True
     )
