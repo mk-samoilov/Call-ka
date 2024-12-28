@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Call-ka Phone: Register{% endblock %}
+
+{% block content %}
+<div class="auth-form card-with-shadow" style="min-width: 400px; min-height: 200px;">
+    <nav class="navbar-container">
+        <div style="display: flex;">
+            <a href="/" style="display: flex;">
+                <h1>Call-ka</h1>
+                <p>phone</p>
+            </a>
+            <a href="/register" style="display: flex;">
+                <h1>: Register</h1>
+            </a>
+        </div>
+    </nav>
+    <form method="POST">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <button type="submit" class="accept-button">Register</button>
+    </form>
+    <h3>Already have an account? <a href="{{ url_for('login') }}" style="color: #4f50d7;">Login</a></h3>
+</div>
+
+<link type="text/css"  href="{{ url_for('static', filename='css/card-with-shadow.css') }}" rel="stylesheet">
+<link type="text/css"  href="{{ url_for('static', filename='css/buttons.css') }}" rel="stylesheet">
+{% endblock %}

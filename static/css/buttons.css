@@ -1,0 +1,56 @@
+.s-button {
+    background-color: #162282;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 0px;
+    display: inline-block;
+    transition: .2s linear;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.s-button:hover {
+    background-color: #141f76;
+}
+
+.del-button {
+    background-color: #901100;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 0px;
+    display: inline-block;
+    transition: .2s linear;
+    text-decoration: none;
+}
+
+.del-button:hover {
+    background-color: #6f0d00;
+}
+
+.accept-button {
+    background-color: #045505;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 0px;
+    display: inline-block;
+    transition: .2s linear;
+    text-decoration: none;
+}
+
+.accept-button:hover {
+    background-color: #034104;
+}
+
+.button-with-shadow {
+    border-radius: 0px;
+    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.5);
+    justify-content: center;
+}
