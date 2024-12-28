@@ -63,6 +63,7 @@ def login():
 
         if user:
             session["user_id"] = user["id"]
+            session["user_phone_number"] = user["phone"]
             flash("Logged in successfully!", "success")
             return redirect(url_for("index"))
         else:

@@ -14,7 +14,7 @@ Call-ka Phone
     </nav>
     <div style="padding: 10px;">
         {% if 'user_id' in session %}
-        <h3>Your phone number: {{ user_phone }}</h3>
+        <h3>Your phone number: {{ session.user_phone_number }}</h3>
             <div id="dial-pad">
                 <input class="button-with-shadow" type="text" id="number-input">
                 <div class="keypad">
