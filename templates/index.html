@@ -14,7 +14,10 @@ Call-ka Phone
     </nav>
     <div style="padding: 10px;">
         {% if 'user_id' in session %}
-        <h3>Your phone number: {{ session.user_phone_number }}</h3>
+            <nav class="navbar-container" style="padding: 0px;">
+                <h3>Your phone number: {{ session.user_phone_number }}</h3>
+                <a href="/logout" class="del-button button-with-shadow">Logout</a>
+            </nav>
             <div id="dial-pad">
                 <input class="button-with-shadow" type="text" id="number-input">
                 <div class="keypad">
@@ -34,7 +37,6 @@ Call-ka Phone
                     <button class="accept-button grid-column-snap-2 button-with-shadow" id="call-btn">Call</button>
                 </div>
             </div>
-            <a href="/logout" class="del-button button-with-shadow">Logout</a>
         {% else %}
         <h2>Welcome!</h2>
         <h2>Please, <a href="/login" style="color: #4f50d7;">login</a> or <a href="/register" style="color: #4f50d7;">register</a> to get started!</h2>
