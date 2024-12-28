@@ -7,7 +7,7 @@ body {
 }
 
 .container {
-    max-width: 400px;
+    max-width: 350px;
     margin: 0 auto;
 }
 
@@ -93,13 +93,14 @@ a:hover {
 }
 
 .alert {
-    padding: 12px 16px;
+    padding: 8px 16px;
     margin-top: 6px;
     margin-bottom: 15px;
     border-radius: 0px;
     font-family: Arial, sans-serif;
-    font-size: 17px;
+    font-size: 18px;
     color: #ffffff;
+    width: 105%;
     background-color: #333333;
     border-left: 4px solid #666666;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

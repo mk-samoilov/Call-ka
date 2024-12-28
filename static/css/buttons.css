@@ -1,5 +1,5 @@
 .s-button {
-    background-color: #162282;
+    background-color: #2e2e2e;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -14,7 +14,7 @@
 }
 
 .s-button:hover {
-    background-color: #141f76;
+    background-color: #262626;
 }
 
 .del-button {

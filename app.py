@@ -19,7 +19,7 @@ def init_db():
 init_db()
 
 def generate_phone_number():
-    return f"+7{random.randint(9000000000, 9999999999)}"
+    return f"8{random.randint(9000000000, 9999999999)}"
 
 def generate_token(_id, phone, name):
     token_string = f"{_id}{phone}{name}"

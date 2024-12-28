@@ -14,26 +14,27 @@ Call-ka Phone
     </nav>
     <div style="padding: 10px;">
         {% if 'user_id' in session %}
+        <h3>Your phone number: {{ user_phone }}</h3>
             <div id="dial-pad">
                 <input class="button-with-shadow" type="text" id="number-input">
                 <div class="keypad">
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">1</button>
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">2</button>
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">3</button>
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">4</button>
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">5</button>
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">6</button>
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">7</button>
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">8</button>
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">9</button>
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">*</button>
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">0</button>
-                    <button class="digit s-button button-with-shadow" style="background-color: #2e2e2e;">#</button>
+                    <button class="digit s-button button-with-shadow">1</button>
+                    <button class="digit s-button button-with-shadow">2</button>
+                    <button class="digit s-button button-with-shadow">3</button>
+                    <button class="digit s-button button-with-shadow">4</button>
+                    <button class="digit s-button button-with-shadow">5</button>
+                    <button class="digit s-button button-with-shadow">6</button>
+                    <button class="digit s-button button-with-shadow">7</button>
+                    <button class="digit s-button button-with-shadow">8</button>
+                    <button class="digit s-button button-with-shadow">9</button>
+                    <button class="digit s-button button-with-shadow">*</button>
+                    <button class="digit s-button button-with-shadow">0</button>
+                    <button class="digit s-button button-with-shadow">#</button>
                     <button class="del-button button-with-shadow" id="backspace-btn">←</button>
                     <button class="accept-button grid-column-snap-2 button-with-shadow" id="call-btn">Call</button>
                 </div>
             </div>
-            <a href="/logout" class="del-button">Logout</a>
+            <a href="/logout" class="del-button button-with-shadow">Logout</a>
         {% else %}
         <h2>Welcome!</h2>
         <h2>Please, <a href="/login" style="color: #4f50d7;">login</a> or <a href="/register" style="color: #4f50d7;">register</a> to get started!</h2>
