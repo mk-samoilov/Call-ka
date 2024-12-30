@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io('8a4f-46-164-219-173.ngrok-free.app');
 
 const dialPad = document.getElementById('dial-pad');
 const callStatus = document.getElementById('call-status');
@@ -25,16 +25,38 @@ const configuration = {
         { urls: 'stun:stun2.l.google.com:19302' },
         { urls: 'stun:stun3.l.google.com:19302' },
         { urls: 'stun:stun4.l.google.com:19302' },
+        {
+            urls: 'turn:numb.viagenie.ca',
+            credential: 'muazkh',
+            username: 'webrtc@live.com'
+        },
     ]
 };
+
+function handleICEConnectionStateChange() {
+    console.log("ICE connection state: ", peerConnection.iceConnectionState);
+    if (peerConnection.iceConnectionState === 'failed') {
+        console.log("ICE Connection failed. Restarting ICE.");
+        peerConnection.restartIce();
+    }
+}
 
 async function startCall(phoneNumber) {
     try {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             throw new Error('getUserMedia is not supported in this browser');
         }
+
+        // Emit the start_call event and wait for potential errors
+        socket.emit('start_call', { target: phoneNumber });
+
+        // Wait for a short time to see if we receive a call_error
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // If we haven't received a call_error, proceed with the call
         localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         peerConnection = new RTCPeerConnection(configuration);
+        peerConnection.oniceconnectionstatechange = handleICEConnectionStateChange;
 
         localStream.getTracks().forEach(track => {
             peerConnection.addTrack(track, localStream);
@@ -42,7 +64,10 @@ async function startCall(phoneNumber) {
 
         peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
+                console.log("New ICE candidate: ", event.candidate);
                 socket.emit('ice_candidate', { target: phoneNumber, candidate: event.candidate });
+            } else {
+                console.log("All ICE candidates have been sent");
             }
         };
 
@@ -62,6 +87,7 @@ async function startCall(phoneNumber) {
     } catch (error) {
         console.error('Error starting call:', error);
         alert('Failed to start call. Please ensure you\'re using a supported browser and have granted microphone permissions.');
+        resetCallUI();
     }
 }
 
@@ -198,6 +224,11 @@ socket.on('call_ended', function(data) {
     updateCallStatus('Call ended by ' + data.by);
     setTimeout(resetCallUI, 3000);
     endCall();
+});
+
+socket.on('call_error', function(data) {
+    alert(data.message);
+    resetCallUI();
 });
 
 // Request microphone permission when the page loads

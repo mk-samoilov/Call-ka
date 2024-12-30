@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
+import time
 import os
 import sqlite3
 import hashlib
@@ -11,13 +12,22 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+connected_users = {}
 
 
 def get_db_connection():
     conn = sqlite3.connect("users.db")
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def check_phone_number_exists(phone_number):
+    conn = get_db_connection()
+    user = conn.execute("SELECT * FROM users WHERE phone = ?", (phone_number,)).fetchone()
+    conn.close()
+    return user is not None
 
 
 def init_db():
@@ -98,21 +108,32 @@ def logout():
 @socketio.on("connect")
 def handle_connect():
     if "user_id" in session:
-        join_room(session["user_phone_number"])
-        logging.info(f"User {session["user_phone_number"]} connected")
+        user_phone = session["user_phone_number"]
+        join_room(user_phone)
+        connected_users[user_phone] = time.time()
+        logging.info(f"User {user_phone} connected")
 
 
 @socketio.on("disconnect")
 def handle_disconnect():
     if "user_id" in session:
-        leave_room(session["user_phone_number"])
-        logging.info(f"User {session["user_phone_number"]} disconnected")
+        user_phone = session["user_phone_number"]
+        leave_room(user_phone)
+        if user_phone in connected_users:
+            del connected_users[user_phone]
+        logging.info(f"User {user_phone} disconnected")
 
 
 @socketio.on("start_call")
 def handle_start_call(data):
     target_number = data["target"]
     caller_number = session["user_phone_number"]
+
+    if not check_phone_number_exists(target_number):
+        logging.warning(f"Attempted call to non-existent number {target_number} from {caller_number}")
+        emit("call_error", {"message": "The number you are trying to call does not exist."}, room=caller_number)
+        return
+
     logging.info(f"Call started from {caller_number} to {target_number}")
     emit("incoming_call", {"from": caller_number}, room=target_number)
 
@@ -120,21 +141,21 @@ def handle_start_call(data):
 @socketio.on("accept_call")
 def handle_accept_call(data):
     caller_number = data["from"]
-    logging.info(f"Call accepted by {session["user_phone_number"]} from {caller_number}")
+    logging.info(f"Call accepted by {session['user_phone_number']} from {caller_number}")
     emit("call_accepted", {"by": session["user_phone_number"]}, room=caller_number)
 
 
 @socketio.on("decline_call")
 def handle_decline_call(data):
     caller_number = data["from"]
-    logging.info(f"Call declined by {session["user_phone_number"]} from {caller_number}")
+    logging.info(f"Call declined by {session['user_phone_number']} from {caller_number}")
     emit("call_declined", {"by": session["user_phone_number"]}, room=caller_number)
 
 
 @socketio.on("end_call")
 def handle_end_call(data):
     target_number = data["target"]
-    logging.info(f"Call ended by {session["user_phone_number"]} to {target_number}")
+    logging.info(f"Call ended by {session['user_phone_number']} to {target_number}")
     emit("call_ended", {"by": session["user_phone_number"]}, room=target_number)
 
 
@@ -151,7 +172,7 @@ def handle_offer(data):
 def handle_answer(data):
     target = data["target"]
     answer = data["answer"]
-    logging.info(f"Answer sent from {session["user_phone_number"]} to {target}")
+    logging.info(f"Answer sent from {session['user_phone_number']} to {target}")
     emit("answer", {"answer": answer}, room=target)
 
 
@@ -159,9 +180,19 @@ def handle_answer(data):
 def handle_ice_candidate(data):
     target = data["target"]
     candidate = data["candidate"]
-    logging.info(f"ICE candidate sent from {session["user_phone_number"]} to {target}")
+    logging.info(f"ICE candidate sent from {session['user_phone_number']} to {target}")
     emit("ice_candidate", {"candidate": candidate}, room=target)
 
+
+def check_connections():
+    current_time = time.time()
+    for user_phone, last_seen in list(connected_users.items()):
+        if current_time - last_seen > 60:
+            logging.warning(f"User {user_phone} seems to be inactive. Removing from connected users.")
+            del connected_users[user_phone]
+
+
+socketio.start_background_task(check_connections)
 
 if __name__ == "__main__":
     socketio.run(

@@ -7,7 +7,7 @@ body {
 }
 
 .container {
-    max-width: 350px;
+    max-width: 660px;
     margin: 0 auto;
 }
 
@@ -19,11 +19,12 @@ body {
 
 input {
     display: block;
-    width: 100%;
     margin-bottom: 10px;
     padding: 10px;
     box-sizing: border-box;
+    width: 100%;
     border: 0px;
+    border-radius: 0px;
     background-color: #121217;
     color: #ffffff;
 }
@@ -95,12 +96,11 @@ a:hover {
 .alert {
     padding: 8px 16px;
     margin-top: 6px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     border-radius: 0px;
     font-family: Arial, sans-serif;
     font-size: 18px;
     color: #ffffff;
-    width: 105%;
     background-color: #333333;
     border-left: 4px solid #666666;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
