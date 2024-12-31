@@ -3,8 +3,8 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 
 import time
 import os
+import re
 import sqlite3
-import hashlib
 import random
 import logging
 
@@ -44,9 +44,8 @@ def generate_phone_number():
     return f"8{random.randint(9000000000, 9999999999)}"
 
 
-def generate_token(_id, phone, name):
-    token_string = f"{_id}{phone}{name}"
-    return hashlib.sha256(token_string.encode()).hexdigest()
+def is_valid_token(token):
+    return re.match(r'^[a-zA-Z0-9]{6,20}$', token) is not None
 
 
 @app.route("/")
@@ -58,21 +57,26 @@ def index():
 def register():
     if request.method == "POST":
         name = request.form["name"]
+        token = request.form["token"]
+
+        if not is_valid_token(token):
+            flash("Invalid token. Token must be 6-20 characters long and contain only letters and numbers.", "error")
+            return redirect(url_for("register"))
 
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        cursor.execute("INSERT INTO users (name, phone) VALUES (?, ?)", (name, generate_phone_number()))
-        user_id = cursor.lastrowid
+        existing_user = cursor.execute("SELECT * FROM users WHERE token = ?", (token,)).fetchone()
+        if existing_user:
+            flash("This token is already in use. Please choose a different one.", "error")
+            return redirect(url_for("register"))
 
-        user = cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
-        token = generate_token(user["id"], user["phone"], user["name"])
-
-        cursor.execute("UPDATE users SET token = ? WHERE id = ?", (token, user_id))
+        phone = generate_phone_number()
+        cursor.execute("INSERT INTO users (name, phone, token) VALUES (?, ?, ?)", (name, phone, token))
         conn.commit()
         conn.close()
 
-        flash(f"Registration successful! Your token is: {token}", "success")
+        flash(f"Registration successful! Your phone number is: {phone}", "success")
         return redirect(url_for("login"))
 
     return render_template("register.html")

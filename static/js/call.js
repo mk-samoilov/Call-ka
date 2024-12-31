@@ -1,4 +1,4 @@
-const socket = io('8a4f-46-164-219-173.ngrok-free.app');
+const socket = io();
 
 const dialPad = document.getElementById('dial-pad');
 const callStatus = document.getElementById('call-status');
